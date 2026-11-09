@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MEMON’S CAFE</title>
+<style>
+:root{
+  --bg:#f7f2e4;--card:#fffaf0;--ink:#1a1608;--muted:#6b5f3a;--gold:#8a6d12;--gold-ink:#fff;--line:#d9c98f;--field:#fff;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0b0b;--card:#16130a;--ink:#f6efd6;--muted:#b8aa78;--gold:#d4af37;--gold-ink:#0b0b0b;--line:#3a3115;--field:#0b0b0b}}
+:root[data-theme="dark"]{--bg:#0b0b0b;--card:#16130a;--ink:#f6efd6;--muted:#b8aa78;--gold:#d4af37;--gold-ink:#0b0b0b;--line:#3a3115;--field:#0b0b0b}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,Roboto,sans-serif}
+.wrap{max-width:680px;margin:0 auto}
+.hero{background:#0b0b0b;color:#f3e7b5;padding:52px 20px 40px;text-align:center;border-bottom:3px solid #d4af37}
+h1{font:700 clamp(2.2rem,10vw,3.6rem)/1.05 Georgia,"Times New Roman",serif;letter-spacing:.06em;margin:0 0 10px;color:#d4af37}
+.hero p{margin:0 auto 16px;max-width:34ch;opacity:.9}
+.status{font-weight:600;margin-bottom:20px}
+.btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+a.btn,button.btn{display:inline-block;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;padding:13px 22px;border-radius:8px;min-height:46px;background:var(--gold);color:var(--gold-ink)}
+.hero a.btn{background:#d4af37;color:#0b0b0b}
+.hero a.btn.alt,a.btn.alt,button.alt{background:transparent;color:inherit;border:1px solid #d4af37}
+a.btn[aria-disabled='true']{opacity:.4;pointer-events:none}
+button:disabled{opacity:.4;cursor:not-allowed}
+section{padding:30px 20px;border-bottom:1px solid var(--line)}
+h2{font:700 1.6rem/1.2 Georgia,serif;margin:0 0 6px;color:var(--gold)}
+.sub{color:var(--muted);margin:0 0 16px}
+.item{display:grid;grid-template-columns:1fr auto 44px 32px 44px;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+.item .p{color:var(--gold);font-weight:700;padding-right:6px}
+.item button{min-height:44px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;font-size:1.2rem;font-weight:700;cursor:pointer}
+.item b{text-align:center}
+label{display:block;font-weight:600;margin:14px 0 4px}
+input,textarea{width:100%;font:inherit;padding:11px 12px;border:1px solid var(--line);border-radius:6px;background:var(--field);color:var(--ink)}
+input:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+pre.bill{white-space:pre-wrap;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px;font:14px/1.5 ui-monospace,Menlo,monospace;margin:16px 0}
+.card{background:var(--card);border:2px solid var(--gold);border-radius:12px;padding:18px;text-align:center}
+.card h3{font:700 1.2rem Georgia,serif;margin:0;color:var(--gold);letter-spacing:.1em}
+.stamps{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:14px 0}
+.st{aspect-ratio:1;border:2px dashed var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--muted)}
+.st.on{background:var(--gold);color:var(--gold-ink);border:2px solid var(--gold)}
+.st.last{font-size:.75rem;border-color:var(--gold)}
+ul.rules{text-align:left;margin:12px 0 0;padding-left:20px;font-size:.92rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line)}
+td{padding:11px 14px;border-bottom:1px solid var(--line)}td:last-child{text-align:right;color:var(--muted)}
+tr.today td{font-weight:700;color:var(--gold)}
+.qrgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-top:16px}
+.qrcard{background:#fff;color:#000;padding:10px;text-align:center;border-radius:6px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.small{font-size:.85rem;color:var(--muted)}
+footer{padding:24px 20px 40px;text-align:center;color:var(--muted);font-size:.85rem}
+</style>
+</head>
+<body>
+<header class="hero"><div class="wrap">
+<h1>MEMON’S CAFE</h1>
+<p>Tea, coffee, burgers and pizza. Order from your table in a minute.</p>
+<div class="status" id="status">Checking hours…</div>
+<div class="btns"><a class="btn" href="#menu">Order Now</a><a class="btn alt" href="#loyalty">Loyalty Card</a></div>
+</div></header>
+
+<section id="menu"><div class="wrap">
+<h2>Menu</h2>
+<p class="sub">Tap + to add items to your order.</p>
+<div id="menuList"></div>
+
+<h2 style="margin-top:28px">Your order</h2>
+<label for="tableNo">Table number</label>
+<input id="tableNo" inputmode="numeric" maxlength="3" placeholder="e.g. 5">
+<label for="cname">Your name (optional)</label>
+<input id="cname" maxlength="40" placeholder="Name">
+<label for="notes">Special instructions (optional)</label>
+<textarea id="notes" rows="2" maxlength="160" placeholder="Less sugar, no onions"></textarea>
+<pre id="bill" class="bill">Add items to build your order.</pre>
+<div class="btns" style="justify-content:flex-start"><a id="send" class="btn" href="#menu" aria-disabled="true">Order Now on WhatsApp</a><button id="clear" type="button" class="btn alt">Clear</button></div>
+<p id="ostatus" class="small" role="status"></p>
+</div></section>
+
+<section id="loyalty"><div class="wrap">
+<div class="card">
+<h3>MEMON’S CAFE · LOYALTY CARD</h3>
+<p style="margin:6px 0 0;font-weight:700">BUY 9 – GET 20% OFF</p>
+<div class="stamps" id="stamps"></div>
+<p class="small" id="cardMsg" style="margin:0"></p>
+<ul class="rules">
+<li>Each eligible order must be Rs. 499 or more.</li>
+<li>Maximum 1 stamp per day, even if you order 3 times.</li>
+<li>After 9 stamps, your 10th eligible order gets 20% off.</li>
+<li>The discount applies only to the 10th eligible order.</li>
+</ul>
+<p class="small">This card is saved in this phone’s browser only. The café may check it before giving a discount.</p>
+</div>
+</div></section>
+
+<section id="hours"><div class="wrap">
+<h2>Opening hours</h2>
+<table id="hoursTable"></table>
+</div></section>
+
+<section id="contact"><div class="wrap">
+<h2>Contact</h2>
+<p>Order or ask us anything on WhatsApp: +92 322 2527360</p>
+<div class="btns" style="justify-content:flex-start"><a class="btn" href="https://wa.me/923222527360" target="_blank" rel="noopener">WhatsApp us</a><a class="btn alt" href="tel:+923222527360">Call</a></div>
+</div></section>
+
+<section id="qrSec" hidden><div class="wrap">
+<h2>Owner: QR codes</h2>
+<p class="sub">Scanning a table code opens the menu with that table number filled in. Print and place one on each table.</p>
+<label for="baseUrl">Website link</label><input id="baseUrl">
+<label for="nTables">Number of tables</label><input id="nTables" inputmode="numeric" value="10">
+<div class="btns" style="justify-content:flex-start;margin-top:14px"><button id="mkqr" type="button" class="btn">Make QR codes</button></div>
+<div id="qrGrid" class="qrgrid"></div>
+</div></section>
+
+<footer>© MEMON’S CAFE</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+var PHONE='923222527360',NL=String.fromCharCode(10),KEY='memons_card';
+var MENU=[['Tea',49],['Coffee',349],['Zinger Burger',499],['Small Pizza',399],['Medium Pizza',699],['Large Pizza',749]];
+var $=function(i){return document.getElementById(i)};
+var qty={},els={};
+function today(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Karachi'}).format(new Date())}
+function load(){try{var c=JSON.parse(localStorage.getItem(KEY));if(c&&typeof c.s==='number')return c}catch(e){}return {s:0,d:''}}
+function save(c){try{localStorage.setItem(KEY,JSON.stringify(c))}catch(e){}}
+
+/* hours */
+var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+var parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Karachi',weekday:'long',hour:'numeric',hour12:false}).formatToParts(new Date());
+var wd=parts.filter(function(x){return x.type==='weekday'})[0].value;
+var hr=parseInt(parts.filter(function(x){return x.type==='hour'})[0].value,10)%24;
+$('status').textContent=(hr>=3&&hr<9)?'Open now · until 9 AM':'Closed now · opens at 3 AM';
+$('hoursTable').innerHTML=days.map(function(d){return '<tr'+(d===wd?' class="today"':'')+'><td>'+d+'</td><td>3:00 AM – 9:00 AM</td></tr>'}).join('');
+
+/* loyalty */
+function drawCard(){
+ var c=load(),h='';
+ for(var i=1;i<=9;i++)h+='<div class="st'+(i<=c.s?' on':'')+'">'+i+'</div>';
+ h+='<div class="st last'+(c.s>=9?' on':'')+'">20% OFF</div>';
+ $('stamps').innerHTML=h;
+ $('cardMsg').textContent=c.s>=9?'Your next eligible order gets 20% off.':(c.s+' of 9 stamps collected.');
+}
+
+/* order */
+function totals(){
+ var sub=0;MENU.forEach(function(m){sub+=(qty[m[0]]||0)*m[1]});
+ var c=load(),elig=sub>=499,disc=(c.s>=9&&elig)?Math.round(sub*0.2):0;
+ return {sub:sub,elig:elig,disc:disc,total:sub-disc,card:c};
+}
+function bill(){
+ var t=totals(),L=[];
+ MENU.forEach(function(m){var q=qty[m[0]]||0;if(q)L.push(q+' x '+m[0]+' = Rs. '+(q*m[1]))});
+ if(!L.length)return '';
+ var out='MEMON’S CAFE - New order'+NL+'Table: '+($('tableNo').value.trim()||'?');
+ var n=$('cname').value.trim();if(n)out+=NL+'Name: '+n;
+ out+=NL+L.join(NL)+NL+'Subtotal: Rs. '+t.sub;
+ if(t.disc)out+=NL+'Loyalty 20% off: -Rs. '+t.disc;
+ out+=NL+'Total: Rs. '+t.total;
+ var x=$('notes').value.trim();if(x)out+=NL+'Notes: '+x;
+ return out;
+}
+function upd(){
+ var b=bill(),ok=b&&$('tableNo').value.trim();
+ $('bill').textContent=b||'Add items to build your order.';
+ var a=$('send');
+ a.setAttribute('aria-disabled',ok?'false':'true');
+ a.href=ok?'https://wa.me/'+PHONE+'?text='+encodeURIComponent(b):'#menu';
+ a.target=ok?'_blank':'';
+ $('ostatus').textContent=!b?'':(!$('tableNo').value.trim()?'Enter your table number to continue.':'');
+}
+function step(n,d){qty[n]=Math.max(0,(qty[n]||0)+d);els[n].textContent=qty[n];upd()}
+function mk(t,n,d){var b=document.createElement('button');b.type='button';b.textContent=t;b.setAttribute('aria-label',(d>0?'Add ':'Remove ')+n);b.onclick=function(){step(n,d)};return b}
+MENU.forEach(function(m){
+ var r=document.createElement('div');r.className='item';
+ var s=document.createElement('span');s.textContent=m[0];
+ var p=document.createElement('span');p.className='p';p.textContent='Rs. '+m[1];
+ var q=document.createElement('b');q.textContent='0';els[m[0]]=q;
+ r.append(s,p,mk('-',m[0],-1),q,mk('+',m[0],1));$('menuList').appendChild(r);
+});
+['tableNo','cname','notes'].forEach(function(i){$(i).oninput=upd});
+$('clear').onclick=function(){MENU.forEach(function(m){qty[m[0]]=0;els[m[0]].textContent='0'});$('notes').value='';upd()};
+$('send').addEventListener('click',function(){
+ if(this.getAttribute('aria-disabled')==='true')return;
+ var t=totals(),c=t.card;
+ if(t.elig){
+  if(c.s>=9&&t.disc>0){c.s=0;c.d=today()}
+  else if(c.s<9&&c.d!==today()){c.s++;c.d=today()}
+  save(c);
+ }
+ setTimeout(function(){drawCard();upd()},400);
+});
+
+/* QR */
+function makeQr(){
+ var n=Math.min(40,Math.max(1,parseInt($('nTables').value,10)||10)),box=$('qrGrid');box.textContent='';
+ if(typeof QRCode==='undefined'){box.textContent='The QR library did not load.';return}
+ var base=$('baseUrl').value.trim().split('#')[0];
+ function add(label,url){var c=document.createElement('div');c.className='qrcard';var d=document.createElement('div');c.appendChild(d);var l=document.createElement('b');l.textContent=label;c.appendChild(l);box.appendChild(c);new QRCode(d,{text:url,width:140,height:140})}
+ add('Main website',base);
+ for(var i=1;i<=n;i++)add('Table '+i,base+'#t'+i);
+}
+$('mkqr').onclick=makeQr;
+function route(){
+ var h=location.hash,m=/^#t([0-9]{1,3})$/.exec(h);
+ if(m){$('tableNo').value=m[1];upd();$('menu').scrollIntoView()}
+ $('qrSec').hidden=(h!=='#qr');
+ if(h==='#qr')$('baseUrl').value=location.href.split('#')[0];
+}
+window.addEventListener('hashchange',route);
+drawCard();upd();route();
+})();
+</script>
+</body>
+</html>
